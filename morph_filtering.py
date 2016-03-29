@@ -57,11 +57,11 @@ def ApplyDilate(img, gmatrix):
     widthr = range(width)
     heightr = range(height)
     out = copy.deepcopy(img)
-    for x in enumerate widthr:
-        for y in enumerate heightr:
+    for x in widthr:
+        for y in heightr:
             color = 255  # White
-            for mx in enumerate([-2,-1,0,1,2]):
-                for my in enumerate([-2,-1,0,1,2]):
+            for mx in [-2,-1,0,1,2]:
+                for my in [-2,-1,0,1,2]:
                     if gmatrix[mx + 2][my + 2] == 1:  # Only take the values that are 1 in the matrix
                         # Smearing
                         ix = min(max(x + mx, 0), width - 1)
@@ -78,11 +78,11 @@ def ApplyErosion(img, gmatrix):
     widthr = range(width)
     heightr = range(height)
     out = copy.deepcopy(img)
-    for x in enumerate widthr:
-        for y in enumerate heightr:
+    for x in widthr:
+        for y in heightr:
             color = 0  # Black
-            for mx in enumerate([-2,-1,0,1,2]):
-                for my in enumerate([-2,-1,0,1,2]):
+            for mx in [-2,-1,0,1,2]:
+                for my in [-2,-1,0,1,2]:
                     if gmatrix[mx + 2][my + 2] == 1:  # Only take the values that are 1 in the matrix
                         # Smearing
                         ix = min(max(x + mx, 0), width - 1)
@@ -96,23 +96,27 @@ def ApplyErosion(img, gmatrix):
 # Main
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print >>sys.stderr, "Usage: %s <input image> <weight>"
+        print >>sys.stderr, "Usage: %s <input image>"
         sys.exit(0)
 
     # Filenames
+    print("Reading Input")
     input_filename = sys.argv[1]
     oname = input_filename.rsplit('.',1)[0]
-    output_filename = oname + '_filter.png'
+    output_filename = oname + '_morph_filter.png'
 
     # Read input and generate matrix
     image_intensities = read_image_greyscale(input_filename)
     matrix = GenHMatrix()
 
     # Apply the matrix blur
+    print("Applying Dilate (5X5 Matrix)")
     dilated = ApplyDilate(image_intensities, matrix)
 
     # Apply the Erosion
+    print("Applying Erode (5X5 Matrix)")
     eroded = ApplyErosion(image_intensities, matrix)
 
     # Save output
+    print("Saving Image")
     write_png_grayscale(output_filename, eroded)
